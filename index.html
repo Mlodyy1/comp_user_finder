@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitive Player Finder</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Competitive Player Profile Finder</h1>
+        <p>Enter your SteamID64 to find profiles across competitive platforms</p>
+    </header>
+
+    <section class="profile-section">
+        <h2 id="steam-id-display">Your Steam ID</h2>
+
+        <form id="steamForm">
+            <input type="text" name="steam_id" id="steam_id" required placeholder="Enter your SteamID64">
+            <span id="error" class="error"></span>
+            <input type="submit" value="Search">
+        </form>
+
+        <div id="loading" style="display: none;">Loading...</div>
+
+        <div id="results" class="results-grid"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Competitive User Finder</p>
+    </footer>
+
+    <script>
+        document.getElementById('steamForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            const steamId = document.getElementById('steam_id').value.trim();
+            const errorElement = document.getElementById('error');
+            const resultsDiv = document.getElementById('results');
+            const loadingIndicator = document.getElementById('loading');
+            const steamIdDisplay = document.getElementById('steam-id-display');
+
+            errorElement.textContent = '';
+            resultsDiv.innerHTML = '';
+
+            const steamIdRegex = /^[0-9]{17}$/;
+            if (!steamIdRegex.test(steamId)) {
+                errorElement.textContent = 'Please enter a valid 17-digit SteamID64';
+                return;
+            }
+
+            loadingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+
+                steamIdDisplay.textContent = steamId;
+
+                const links = [
+                    { url: `http://logs.tf/profile/${steamId}`, text: 'Logs.tf', img: 'img/logs.jpg' },
+                    { url: `https://ozfortress.com/users/steam_id/${steamId}`, text: 'OZF', img: 'img/ozf.png' },
+                    { url: `http://etf2l.org/search/${steamId}`, text: 'ETF2L', img: 'img/etf2l.jpg' },
+                    { url: `https://rgl.gg/public/PlayerProfile.aspx?p=${steamId}`, text: 'RGL', img: 'img/rgl.png' },
+                    { url: `https://cltf2.com/users/steam_id/${steamId}`, text: 'CLTF2', img: 'img/cltf2.png' },
+                    { url: `http://www.ugcleague.com/players_page.cfm?player_id=${steamId}`, text: 'UGC League', img: 'img/ugc.png' }
+                ];
+
+                links.forEach(link => {
+                    const card = document.createElement('div');
+                    card.classList.add('profile-card');
+
+                    const a = document.createElement('a');
+                    a.href = link.url;
+                    a.target = '_blank'; 
+                    a.classList.add('profile-link');
+
+                    const img = document.createElement('img');
+                    img.src = link.img;
+                    img.alt = link.text;
+                    img.classList.add('profile-icon');
+
+                    const span = document.createElement('span');
+                    span.textContent = link.text;
+
+                    a.appendChild(img);
+                    a.appendChild(span);
+                    card.appendChild(a);
+                    resultsDiv.appendChild(card);
+                });
+            }, 1000); 
+        });
+    </script>
+</body>
+</html>
